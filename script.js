@@ -1,6 +1,6 @@
 const themeToggle = document.getElementById('themeToggle');
 const themeIcon = themeToggle.querySelector('.icon');
-const filterButtons = document.querySelectorAll('.pill');
+const filterButtons = document.querySelectorAll('.pill[data-filter]');
 const regionSelect = document.getElementById('regionSelect');
 const dealCountEl = document.getElementById('dealCount');
 const dealValueEl = document.getElementById('dealValue');
@@ -201,7 +201,7 @@ function drawGrowthLine() {
 }
 
 function applyFilters() {
-  const activeType = document.querySelector('.pill.active').dataset.filter;
+  const activeType = (document.querySelector('.pill[data-filter].active') || filterButtons[0]).dataset.filter;
   const region = regionSelect.value;
   const filtered = sampleDeals.filter((deal) => {
     const matchesType = activeType === 'all' ? true : deal.type === activeType;
