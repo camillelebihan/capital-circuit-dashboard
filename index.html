@@ -80,8 +80,50 @@
             <p class="eyebrow">Latest rounds</p>
             <h3>Recent tech deals</h3>
           </div>
+          <div class="pill-group micro" aria-label="Sort recent deals">
+            <button class="pill tiny active" data-sort="recent">Recent</button>
+            <button class="pill tiny" data-sort="value">By value</button>
+          </div>
         </header>
         <ul id="dealList" class="deal-list"></ul>
+      </article>
+    </section>
+
+    <section class="grid trio">
+      <article class="card chart">
+        <header class="card-header">
+          <div>
+            <p class="eyebrow">Distribution</p>
+            <h3>Stage mix</h3>
+          </div>
+          <span class="badge" id="stageBadge">Live</span>
+        </header>
+        <canvas id="stageDonut" width="320" height="240" aria-label="Stage mix donut"></canvas>
+        <p class="muted">Hover to see breakdown; replace with your analytics source.</p>
+      </article>
+
+      <article class="card chart">
+        <header class="card-header">
+          <div>
+            <p class="eyebrow">Coverage</p>
+            <h3>Region pulse</h3>
+          </div>
+          <span class="badge" id="regionBadge">Auto</span>
+        </header>
+        <canvas id="regionBars" width="360" height="240" aria-label="Regional bar chart"></canvas>
+        <p class="muted">Filters apply here too—wire this to your geo data stream.</p>
+      </article>
+
+      <article class="card chart">
+        <header class="card-header">
+          <div>
+            <p class="eyebrow">Momentum</p>
+            <h3>Ticket growth (hrly)</h3>
+          </div>
+          <span class="badge" id="growthBadge">Simulated</span>
+        </header>
+        <canvas id="growthLine" width="360" height="240" aria-label="Ticket growth line"></canvas>
+        <p class="muted">Swap the mock series with your real-time data feed.</p>
       </article>
     </section>
   </main>

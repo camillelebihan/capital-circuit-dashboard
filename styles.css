@@ -115,6 +115,12 @@ h1 {
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06), var(--shadow);
 }
 
+.pill-group.micro {
+  padding: 4px;
+  gap: 4px;
+  background: var(--surface);
+}
+
 .pill {
   border: none;
   padding: 8px 14px;
@@ -125,6 +131,11 @@ h1 {
   font-weight: 600;
   font-size: 14px;
   transition: background 0.2s ease, color 0.2s ease;
+}
+
+.pill.tiny {
+  padding: 6px 10px;
+  font-size: 12px;
 }
 
 .pill.active {
@@ -197,6 +208,11 @@ select {
   gap: 18px;
 }
 
+.grid.trio {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  margin-top: 18px;
+}
+
 @media (max-width: 960px) {
   .grid {
     grid-template-columns: 1fr;
@@ -229,11 +245,13 @@ select {
   min-height: 260px;
 }
 
-#sparkline {
+.chart canvas {
   width: 100%;
+  height: auto;
   border-radius: 14px;
   background: var(--surface);
   border: 1px solid rgba(255, 255, 255, 0.06);
+  display: block;
 }
 
 .list {
