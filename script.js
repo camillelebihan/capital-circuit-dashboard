@@ -2,6 +2,11 @@ const themeToggle = document.getElementById('themeToggle');
 const themeIcon = themeToggle.querySelector('.icon');
 const filterButtons = document.querySelectorAll('.pill[data-filter]');
 const regionSelect = document.getElementById('regionSelect');
+const sortButtons = document.querySelectorAll('[data-sort]');
+const navButtons = document.querySelectorAll('.nav-btn');
+const pages = document.querySelectorAll('.page');
+
+// Pulse references
 const dealCountEl = document.getElementById('dealCount');
 const dealValueEl = document.getElementById('dealValue');
 const medianTicketEl = document.getElementById('medianTicket');
@@ -12,8 +17,26 @@ const sparkline = document.getElementById('sparkline');
 const stageCanvas = document.getElementById('stageDonut');
 const regionCanvas = document.getElementById('regionBars');
 const growthCanvas = document.getElementById('growthLine');
+const favoritesEl = document.getElementById('favorites');
+const reportsEl = document.getElementById('reports');
 
-const sortButtons = document.querySelectorAll('[data-sort]');
+// Companies references
+const companySearch = document.getElementById('companySearch');
+const companyFilters = document.querySelectorAll('[data-company-filter]');
+const companyListEl = document.getElementById('companyList');
+const fundListEl = document.getElementById('fundList');
+
+// News references
+const ownedNewsEl = document.getElementById('ownedNews');
+const apiNewsEl = document.getElementById('apiNews');
+
+// Learn references
+const learnListEl = document.getElementById('learnList');
+const videoListEl = document.getElementById('videoList');
+
+let activeSort = 'recent';
+let sparkData = Array.from({ length: 24 }, () => Math.floor(Math.random() * 12) + 6);
+let growthSeries = Array.from({ length: 12 }, () => Math.floor(Math.random() * 90) + 30);
 
 const sampleDeals = [
   { name: 'Helio Robotics', value: 52, type: 'vc', region: 'americas', stage: 'Series B', investor: 'Arc Light Partners' },
@@ -30,9 +53,57 @@ const sampleDeals = [
   { name: 'CloudJolt Observability', value: 22, type: 'vc', region: 'americas', stage: 'Series A', investor: 'FocalPoint Labs' },
 ];
 
-let sparkData = Array.from({ length: 24 }, () => Math.floor(Math.random() * 12) + 6);
-let growthSeries = Array.from({ length: 12 }, () => Math.floor(Math.random() * 90) + 30);
-let activeSort = 'recent';
+const favorites = [
+  { name: 'Frontier AI Safety', tag: 'PE · Americas', note: 'Follow-up diligence call Friday.' },
+  { name: 'QuantumNet Grid', tag: 'VC · EMEA', note: 'Watch ARR trend + new CTO hire.' },
+  { name: 'CloudMesh SASE', tag: 'VC · APAC', note: 'Saved for security infra thesis.' },
+  { name: 'Helio Robotics', tag: 'VC · Robotics', note: 'Pinned from live feed.' },
+];
+
+const reports = [
+  { title: 'State of Tech PE Q3', type: 'Report', time: 'Today · 9:12a' },
+  { title: 'VC Deep-Dive: Applied AI Infra', type: 'Brief', time: 'Today · 8:00a' },
+  { title: 'Latency Wars: Edge Cloud Consolidation', type: 'Article', time: 'Yesterday' },
+];
+
+const companies = [
+  { name: 'LumenLayer', status: 'rising', metric: 'Growing 18% MoM · Series B', region: 'APAC' },
+  { name: 'Voltrack Robotics', status: 'rising', metric: 'Pipeline +22% · Seed', region: 'Americas' },
+  { name: 'CortexMesh', status: 'mature', metric: 'ARR $112M · Growth equity', region: 'EMEA' },
+  { name: 'NeuraLinkage', status: 'rising', metric: 'AI infra · Series A', region: 'Global' },
+  { name: 'SolarSynch', status: 'mature', metric: 'Infra · EBITDA positive', region: 'EMEA' },
+];
+
+const funds = [
+  { name: 'Summit River Partners', focus: 'Growth PE · Cloud & DevOps', stat: '+2 portfolio adds this month' },
+  { name: 'Neon Ventures', focus: 'VC · Applied AI & Robotics', stat: 'Lead investor in 3 rounds this quarter' },
+  { name: 'Cobalt Grove Capital', focus: 'PE · Semiconductor supply chain', stat: 'New $1.2B fund just closed' },
+  { name: 'Arc Light Partners', focus: 'VC · Climate tech', stat: 'Tracking 5 APAC prospects' },
+];
+
+const ownedNews = [
+  { title: 'Capital Circuit Launches Frontier Tracker', source: 'Capital Circuit News', tag: 'Platform', time: '1h ago' },
+  { title: 'Tech Deal Pace Holds Despite Rate Moves', source: 'Capital Circuit News', tag: 'Macro', time: '5h ago' },
+];
+
+const apiNews = [
+  { title: 'AI Ops platform raises $70M Series C', source: 'API: TechCrunch', time: '10m ago' },
+  { title: 'Edge robotics consolidator eyes roll-up', source: 'API: Reuters', time: '36m ago' },
+  { title: 'SaaS infra multiples stabilize in Q4', source: 'API: Bloomberg', time: '1h ago' },
+];
+
+const learnItems = [
+  { title: 'PE vs VC in tech: what changes?', detail: 'Explainers on ownership, timelines, and diligence.' },
+  { title: 'How to read a term sheet', detail: 'Key clauses, investor rights, and founder protections.' },
+  { title: 'Deal sourcing cadence', detail: 'Building repeatable pipelines with signals and alerts.' },
+  { title: 'First 100 days in PE', detail: 'Value-creation levers, KPIs, and reporting rhythm.' },
+];
+
+const videos = [
+  { title: 'Valuation 101 for students', length: '7:41', focus: 'Multiples & comps breakdown' },
+  { title: 'How to diligence AI startups', length: '5:06', focus: 'Model risk, data moats, GTM' },
+  { title: 'Portfolio monitoring basics', length: '6:12', focus: 'Dashboards, alerts, variance checks' },
+];
 
 function themeColor(name) {
   return getComputedStyle(document.body).getPropertyValue(name).trim();
@@ -225,9 +296,92 @@ function applyFilters() {
   drawRegionBars(regionCounts);
 }
 
+function renderFavorites() {
+  favoritesEl.innerHTML = '';
+  favorites.forEach((fav) => {
+    const li = document.createElement('li');
+    li.className = 'chip';
+    li.innerHTML = `<strong>${fav.name}</strong><span class="muted">${fav.tag}</span><span class="muted">${fav.note}</span>`;
+    favoritesEl.appendChild(li);
+  });
+}
+
+function renderReports() {
+  reportsEl.innerHTML = '';
+  reports.forEach((report) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<strong>${report.title}</strong><p class="muted">${report.type} · ${report.time}</p>`;
+    reportsEl.appendChild(li);
+  });
+}
+
+function renderCompanies() {
+  if (!companyListEl) return;
+  const query = companySearch.value.toLowerCase();
+  const activeFilter = (document.querySelector('.pill[data-company-filter].active') || companyFilters[0]).dataset.companyFilter;
+
+  const filtered = companies.filter((company) => {
+    const matchesText = company.name.toLowerCase().includes(query) || company.metric.toLowerCase().includes(query);
+    const matchesStatus = activeFilter === 'all' ? true : company.status === activeFilter;
+    return matchesText && matchesStatus;
+  });
+
+  companyListEl.innerHTML = '';
+  filtered.forEach((company) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<strong>${company.name}</strong><p class="muted">${company.metric} · ${company.region}</p>`;
+    companyListEl.appendChild(li);
+  });
+}
+
+function renderFunds() {
+  fundListEl.innerHTML = '';
+  funds.forEach((fund) => {
+    const li = document.createElement('li');
+    li.className = 'fund-card';
+    li.innerHTML = `<div><strong>${fund.name}</strong><p class="fund-metric">${fund.focus}</p></div><span class="badge alt">${fund.stat}</span>`;
+    fundListEl.appendChild(li);
+  });
+}
+
+function renderNewsLists() {
+  ownedNewsEl.innerHTML = '';
+  ownedNews.forEach((item) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<strong>${item.title}</strong><p class="muted">${item.source} · ${item.tag} · ${item.time}</p>`;
+    ownedNewsEl.appendChild(li);
+  });
+
+  apiNewsEl.innerHTML = '';
+  apiNews.forEach((item) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<strong>${item.title}</strong><p class="muted">${item.source} · ${item.time}</p>`;
+    apiNewsEl.appendChild(li);
+  });
+}
+
+function renderLearn() {
+  learnListEl.innerHTML = '';
+  learnItems.forEach((item) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<strong>${item.title}</strong><p class="muted">${item.detail}</p>`;
+    learnListEl.appendChild(li);
+  });
+
+  videoListEl.innerHTML = '';
+  videos.forEach((clip) => {
+    const li = document.createElement('li');
+    li.innerHTML = `<strong>${clip.title}</strong><p class="muted">${clip.focus} · ${clip.length}</p>`;
+    videoListEl.appendChild(li);
+  });
+}
+
 function toggleTheme() {
   const isLight = document.body.classList.toggle('theme-light');
   themeIcon.textContent = isLight ? themeIcon.dataset.light : themeIcon.dataset.dark;
+  drawSparkline();
+  drawGrowthLine();
+  applyFilters();
 }
 
 themeToggle.addEventListener('click', toggleTheme);
@@ -251,6 +405,16 @@ sortButtons.forEach((btn) => {
   });
 });
 
+companyFilters.forEach((btn) => {
+  btn.addEventListener('click', () => {
+    companyFilters.forEach((b) => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCompanies();
+  });
+});
+
+companySearch?.addEventListener('input', renderCompanies);
+
 function tickData() {
   sparkData = [...sparkData.slice(1), Math.floor(Math.random() * 10) + 6];
   growthSeries = [...growthSeries.slice(1), Math.floor(Math.random() * 90) + 30];
@@ -259,14 +423,43 @@ function tickData() {
   applyFilters();
 }
 
-function init() {
+function showPage(target) {
+  pages.forEach((page) => page.classList.toggle('active', page.dataset.page === target));
+  navButtons.forEach((btn) => btn.classList.toggle('active', btn.dataset.page === target));
+}
+
+navButtons.forEach((btn) => {
+  btn.addEventListener('click', () => showPage(btn.dataset.page));
+});
+
+// Mock API hooks – swap with real endpoints
+async function fetchDealsFromApi() {
+  return Promise.resolve(sampleDeals);
+}
+
+async function fetchNewsFromApi() {
+  return Promise.resolve(apiNews);
+}
+
+async function init() {
   sampleDeals.forEach((deal, idx) => {
     deal.timestamp = Date.now() - idx * 60000;
   });
 
   drawSparkline();
   drawGrowthLine();
+  renderFavorites();
+  renderReports();
+  renderCompanies();
+  renderFunds();
+  renderNewsLists();
+  renderLearn();
   applyFilters();
+
+  // Wire placeholders to real APIs here
+  fetchDealsFromApi().then(() => applyFilters());
+  fetchNewsFromApi().then(() => renderNewsLists());
+
   setInterval(tickData, 3500);
 }
 
