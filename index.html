@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tech Investment Pulse</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="theme-light">
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-mark">g</div>
+      <div>
+        <p class="eyebrow">Real-time Tech Deal Monitor</p>
+        <h1>Capital Circuit</h1>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">
+        <span class="icon" data-light="🌙" data-dark="☀️">🌙</span>
+      </button>
+      <div class="divider"></div>
+      <div class="pill-group" aria-label="Firm type filter">
+        <button class="pill active" data-filter="all">All</button>
+        <button class="pill" data-filter="pe">PE</button>
+        <button class="pill" data-filter="vc">VC</button>
+      </div>
+      <div class="select-wrapper">
+        <label for="regionSelect">Region</label>
+        <select id="regionSelect">
+          <option value="global">Global</option>
+          <option value="americas">Americas</option>
+          <option value="emea">EMEA</option>
+          <option value="apac">APAC</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <main class="content">
+    <section class="summary">
+      <article class="card metric">
+        <p class="label">Live Deals</p>
+        <p class="value" id="dealCount">0</p>
+        <p class="muted" id="dealDelta">Updating…</p>
+      </article>
+      <article class="card metric">
+        <p class="label">Total Value</p>
+        <p class="value" id="dealValue">$0</p>
+        <p class="muted">Tech-only, USD</p>
+      </article>
+      <article class="card metric">
+        <p class="label">Median Ticket</p>
+        <p class="value" id="medianTicket">$0</p>
+        <p class="muted">Median round size</p>
+      </article>
+      <article class="card metric">
+        <p class="label">Active Investors</p>
+        <p class="value" id="investorCount">0</p>
+        <p class="muted">Distinct firms</p>
+      </article>
+    </section>
+
+    <section class="grid">
+      <article class="card chart">
+        <header class="card-header">
+          <div>
+            <p class="eyebrow">Velocity</p>
+            <h3>Deal flow (last 30m)</h3>
+          </div>
+          <span class="badge" id="velocityBadge">Live</span>
+        </header>
+        <canvas id="sparkline" width="600" height="180" aria-label="Deal flow sparkline"></canvas>
+        <p class="muted">Real-time sample data; replace with your live feed (websockets, SSE, or polling).</p>
+      </article>
+
+      <article class="card list">
+        <header class="card-header">
+          <div>
+            <p class="eyebrow">Latest rounds</p>
+            <h3>Recent tech deals</h3>
+          </div>
+        </header>
+        <ul id="dealList" class="deal-list"></ul>
+      </article>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Powered by live investment telemetry · Built for PE & VC teams in tech</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
