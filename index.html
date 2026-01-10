@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Capital Circuit News</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="theme-light">
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-mark">C</div>
+      <div>
+        <p class="eyebrow">Real-time Tech Deal Monitor</p>
+        <h1>Capital Circuit News</h1>
+      </div>
+    </div>
+    <div class="actions">
+      <nav class="app-nav" aria-label="Primary">
+        <button class="nav-btn active" data-page="pulse">Pulse</button>
+        <button class="nav-btn" data-page="companies">Companies</button>
+        <button class="nav-btn" data-page="news">Newsroom</button>
+        <button class="nav-btn" data-page="learn">Learn</button>
+        <button class="nav-btn" data-page="auth">Access</button>
+      </nav>
+      <div class="divider"></div>
+      <button class="icon-btn" id="themeToggle" aria-label="Toggle theme">
+        <span class="icon" data-light="🌙" data-dark="☀️">🌙</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="content">
+    <section class="page" data-page="auth">
+      <div class="grid auth-grid">
+        <article class="card hero">
+          <div class="hero-overlay"></div>
+          <div class="hero-content">
+            <p class="eyebrow">Secure entry</p>
+            <h2>Log into Capital Circuit</h2>
+            <p class="muted">Unified access to live tech deals, favorite watchlists, reports, and student resources.</p>
+            <form class="auth-form">
+              <label>Email<input type="email" placeholder="you@firm.com" required /></label>
+              <label>Password<input type="password" placeholder="••••••••" required /></label>
+              <div class="form-actions">
+                <button type="submit" class="primary">Sign in</button>
+                <button type="button" class="ghost">Request access</button>
+              </div>
+              <p class="micro muted">SSO ready · MFA enforced · Data encrypted in transit and at rest</p>
+            </form>
+          </div>
+        </article>
+        <article class="card stack">
+          <header class="card-header">
+            <div>
+              <p class="eyebrow">Platform layers</p>
+              <h3>What you unlock</h3>
+            </div>
+            <span class="badge">Multi-page</span>
+          </header>
+          <ul class="stacked-list">
+            <li>
+              <strong>Hottest deals board</strong>
+              <p class="muted">Live PE & VC flows in tech with streaming charts.</p>
+            </li>
+            <li>
+              <strong>Favorites & follows</strong>
+              <p class="muted">Personalized shortlist to revisit deals, funds, and companies.</p>
+            </li>
+            <li>
+              <strong>Capital Circuit Newsroom</strong>
+              <p class="muted">Reports and curated articles from trusted APIs.</p>
+            </li>
+            <li>
+              <strong>Student starter kit</strong>
+              <p class="muted">Best practices, videos, and explainers for new investors.</p>
+            </li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="page active" data-page="pulse">
+      <div class="toolbar">
+        <div class="pill-group" aria-label="Firm type filter">
+          <button class="pill active" data-filter="all">All</button>
+          <button class="pill" data-filter="pe">PE</button>
+          <button class="pill" data-filter="vc">VC</button>
+        </div>
+        <div class="select-wrapper">
+          <label for="regionSelect">Region</label>
+          <select id="regionSelect">
+            <option value="global">Global</option>
+            <option value="americas">Americas</option>
+            <option value="emea">EMEA</option>
+            <option value="apac">APAC</option>
+          </select>
+        </div>
+        <div class="pill-group micro" aria-label="Sort recent deals">
+          <button class="pill tiny active" data-sort="recent">Recent</button>
+          <button class="pill tiny" data-sort="value">By value</button>
+        </div>
+      </div>
+      <section class="summary">
+        <article class="card metric">
+          <p class="label">Live Deals</p>
+          <p class="value" id="dealCount">0</p>
+          <p class="muted" id="dealDelta">Updating…</p>
+        </article>
+        <article class="card metric">
+          <p class="label">Total Value</p>
+          <p class="value" id="dealValue">$0</p>
+          <p class="muted">Tech-only, USD</p>
+        </article>
+        <article class="card metric">
+          <p class="label">Median Ticket</p>
+          <p class="value" id="medianTicket">$0</p>
+          <p class="muted">Median round size</p>
+        </article>
+        <article class="card metric">
+          <p class="label">Active Investors</p>
+          <p class="value" id="investorCount">0</p>
+          <p class="muted">Distinct firms</p>
+        </article>
+      </section>
+
+      <section class="grid">
+        <article class="card chart">
+          <header class="card-header">
+            <div>
+              <p class="eyebrow">Velocity</p>
+              <h3>Deal flow (last 30m)</h3>
+            </div>
+            <span class="badge" id="velocityBadge">Live</span>
+          </header>
+          <canvas id="sparkline" width="600" height="180" aria-label="Deal flow sparkline"></canvas>
+          <p class="muted">Swap the mock stream for websockets, SSE, or polling to your deal API.</p>
+        </article>
+
+        <article class="card list">
+          <header class="card-header">
+            <div>
+              <p class="eyebrow">Latest rounds</p>
+              <h3>Recent tech deals</h3>
+            </div>
+            <div class="pill-group micro" aria-label="Sort recent deals">
+              <button class="pill tiny active" data-sort="recent">Recent</button>
+              <button class="pill tiny" data-sort="value">By value</button>
+            </div>
+          </header>
+          <ul id="dealList" class="deal-list"></ul>
+        </article>
+      </section>
+
+      <section class="grid trio">
+        <article class="card chart">
+          <header class="card-header">
+            <div>
+              <p class="eyebrow">Distribution</p>
+              <h3>Stage mix</h3>
+            </div>
+            <span class="badge" id="stageBadge">Live</span>
+          </header>
+          <canvas id="stageDonut" width="320" height="240" aria-label="Stage mix donut"></canvas>
+          <p class="muted">Hover to see breakdown; replace with your analytics source.</p>
+        </article>
+
+        <article class="card chart">
+          <header class="card-header">
+            <div>
+              <p class="eyebrow">Coverage</p>
+              <h3>Region pulse</h3>
+            </div>
+            <span class="badge" id="regionBadge">Auto</span>
+          </header>
+          <canvas id="regionBars" width="360" height="240" aria-label="Regional bar chart"></canvas>
+          <p class="muted">Filters apply here too—wire this to your geo data stream.</p>
+        </article>
+
+        <article class="card chart">
+          <header class="card-header">
+            <div>
+              <p class="eyebrow">Momentum</p>
+              <h3>Ticket growth (hrly)</h3>
+            </div>
+            <span class="badge" id="growthBadge">Simulated</span>
+          </header>
+          <canvas id="growthLine" width="360" height="240" aria-label="Ticket growth line"></canvas>
+          <p class="muted">Swap the mock series with your real-time data feed.</p>
+        </article>
+      </section>
+
+      <section class="grid duo">
+        <article class="card">
+          <header class="card-header">
+            <div>
+              <p class="eyebrow">Pinned</p>
+              <h3>Favorites</h3>
+            </div>
+            <span class="badge">Personal</span>
+          </header>
+          <ul id="favorites" class="chip-list"></ul>
+        </article>
+        <article class="card">
+          <header class="card-header">
+            <div>
+              <p class="eyebrow">Latest reports</p>
+              <h3>Capital Circuit News</h3>
+            </div>
+            <span class="badge">Reports</span>
+          </header>
+          <ul id="reports" class="stacked-list"></ul>
+        </article>
+      </section>
+    </section>
+
+    <section class="page" data-page="companies">
+      <section class="grid duo">
+        <article class="card">
+          <header class="card-header">
+            <div>
+              <p class="eyebrow">Company lookup</p>
+              <h3>Search tech names</h3>
+            </div>
+            <span class="badge">Explorer</span>
+          </header>
+          <div class="search-box">
+            <input id="companySearch" type="text" placeholder="Search AI, cloud, frontier companies" />
+            <div class="pill-group micro" aria-label="Company filter">
+              <button class="pill tiny active" data-company-filter="all">All</button>
+              <button class="pill tiny" data-company-filter="rising">Rising</button>
+              <button class="pill tiny" data-company-filter="mature">Mature</button>
+            </div>
+          </div>
+          <ul id="companyList" class="stacked-list"></ul>
+        </article>
+        <article class="card list">
+          <header class="card-header">
+            <div>
+              <p class="eyebrow">Deal checks</p>
+              <h3>Fund snapshots</h3>
+            </div>
+            <span class="badge">Funds</span>
+          </header>
+          <ul id="fundList" class="stacked-list fund-cards"></ul>
+        </article>
+      </section>
+    </section>
+
+    <section class="page" data-page="news">
+      <section class="grid duo">
+        <article class="card">
+          <header class="card-header">
+            <div>
+              <p class="eyebrow">Capital Circuit</p>
+              <h3>Reports & briefs</h3>
+            </div>
+            <span class="badge">Owned</span>
+          </header>
+          <ul id="ownedNews" class="stacked-list"></ul>
+        </article>
+        <article class="card">
+          <header class="card-header">
+            <div>
+              <p class="eyebrow">From trusted APIs</p>
+              <h3>Latest articles</h3>
+            </div>
+            <span class="badge">External</span>
+          </header>
+          <ul id="apiNews" class="stacked-list"></ul>
+        </article>
+      </section>
+    </section>
+
+    <section class="page" data-page="learn">
+      <section class="grid trio">
+        <article class="card">
+          <header class="card-header">
+            <div>
+              <p class="eyebrow">New to investing</p>
+              <h3>Mini library</h3>
+            </div>
+            <span class="badge">Students</span>
+          </header>
+          <ul id="learnList" class="stacked-list"></ul>
+        </article>
+        <article class="card">
+          <header class="card-header">
+            <div>
+              <p class="eyebrow">Best practices</p>
+              <h3>Starter playbook</h3>
+            </div>
+            <span class="badge">Guide</span>
+          </header>
+          <ul class="stacked-list">
+            <li><strong>Daily cadence</strong><p class="muted">15-minute read of deal pulse; save favorites and set alerts.</p></li>
+            <li><strong>Compare by region</strong><p class="muted">Use the filters to contrast APAC vs EMEA flow before calls.</p></li>
+            <li><strong>Validate sources</strong><p class="muted">Triangulate API news with Capital Circuit reports.</p></li>
+            <li><strong>Build conviction</strong><p class="muted">Bookmark companies, track fund moves, and log learnings weekly.</p></li>
+          </ul>
+        </article>
+        <article class="card">
+          <header class="card-header">
+            <div>
+              <p class="eyebrow">How-to videos</p>
+              <h3>Watch & learn</h3>
+            </div>
+            <span class="badge">Clips</span>
+          </header>
+          <ul id="videoList" class="stacked-list"></ul>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>Powered by live investment telemetry · Built for PE & VC teams in tech</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
